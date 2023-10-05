@@ -11,6 +11,10 @@ contract Perpustakaaan {
 
     mapping(string => Book) private bookList;
 
+    event bookAdded(string ISBN, string title, uint256 year, string writer);
+    event bookEdited(string ISBN, string titleFrom, string titleTo, uint256 yearFrom, uint256 yearTo, string writerFrom, string writerTo);
+    event bookDeleted(string ISBN);
+
     address owner;
 
     modifier onlyOwner {
@@ -43,11 +47,16 @@ contract Perpustakaaan {
 
         bookIdentity(_ISBN, _title, _year, _writer);
 
+        emit bookAdded(_ISBN, _title, _year, _writer);
+
     }
 
     // Mengubah buku
     function editBook(string calldata _ISBN, string calldata _title, uint256 _year, string calldata _writer) public isBookNotExist(_ISBN) onlyOwner{
+        Book memory _theBook = bookList[_ISBN];
         
+        emit bookEdited(_ISBN, _theBook.title, _title, _theBook.year, _year, _theBook.writer, _writer);
+
         bookIdentity(_ISBN, _title, _year, _writer);
 
     }
@@ -55,6 +64,7 @@ contract Perpustakaaan {
     // Menghapus buku
     function removeBook(string calldata _ISBN) public onlyOwner isBookNotExist(_ISBN){
         delete bookList[_ISBN];
+        emit bookDeleted(_ISBN);
 
     }
 
